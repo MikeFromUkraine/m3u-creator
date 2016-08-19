@@ -5,12 +5,12 @@ const fs = require('fs');
 const Promise = require('promise');
 
 const mm = require('musicmetadata'); // used to get mp3 metadata
-const program = require('commander'); // used forsetting options
+//const program = require('commander'); // used forsetting options
 
-program.parse(process.argv);
+//program.parse(process.argv);
 
-let filePath = program.args[0];
-let playlistName = program.args[1];
+let filePath = process.argv[2];
+let playlistName = process.argv[3];
 
 ReadFile(filePath).then(GetMetadata, ErrorFunc).then(CreateFile, ErrorFunc);
 
