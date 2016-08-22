@@ -1,2 +1,4 @@
 # m3u-creator
-_...soon..._
+Basic node.js cli tool for creating M3U playlists using a text file.
+
+Quick, learning project. 
