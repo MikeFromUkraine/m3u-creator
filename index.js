@@ -5,8 +5,8 @@ const fs = require('fs');
 const Promise = require('promise');
 
 const mm = require('musicmetadata'); // used to get mp3 metadata
+// may use 'commander' at a later date
 //const program = require('commander'); // used forsetting options
-
 //program.parse(process.argv);
 
 let filePath = process.argv[2];
@@ -22,21 +22,7 @@ function ReadFile(filePath) {
 			};
 
 			let lines = data.split('\n');
-			let requests = lines.filter((line) => {
-				return new Promise((res, rej) => {
-					fs.lstat(line, (err, stats) => {
-						if(err) { 		// issue 
-							rej(err);
-							return;
-						};
-						res(line);
-					});	
-				});
-			});
-
-			Promise.all(requests).then((validLines) => {
-				resolve(validLines);
-			}, ErrorFunc);
+			resolve(lines);
 		});	
 	});
 	
@@ -48,7 +34,17 @@ function GetMetadata(validFiles) {
 		let metadata = [];
 		let requests = validFiles.map((line) => {
 			return new Promise((res, rej) => {
-				mm(fs.createReadStream(line), { duration: true }, function(err, metadata){
+				// create read stream
+				var readStream = fs.createReadStream(line);
+				readStream.on('error', function (err) {
+					if(err.code === 'ENOENT')
+						console.log(`Error - Unable to add a line; it may not exist:\n ${err.path}\n`);
+					else {
+						console.log(err);;
+					}
+				});
+
+				mm(readStream, { duration: true }, function(err, metadata){
 					if(err) rej(err);
 					
 					let info = {
@@ -89,7 +85,7 @@ function CreateFile(metadata) {
 function ErrorFunc(err) {
 	if(err.code === 'ENOENT') {
 		console.log('File doesn\'t exist: %s', line);
-		reject(err);	
+		console.error(err);	
 	}
 	console.error(err);
 }
