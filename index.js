@@ -77,6 +77,10 @@ function GetMetadata(validFiles) {
 	return promise;
 }
 
+class M3uEmitter extends EventEmitter {}
+
+
+
 /*
 	Create M3U file
  */
